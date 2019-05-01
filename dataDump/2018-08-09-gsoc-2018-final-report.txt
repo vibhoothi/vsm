@@ -1,0 +1,367 @@
+---
+author: vibhoothiiaanand
+comments: true
+date: 2018-08-09 20:05:48+00:00
+layout: post
+link: https://vibhoothiiaanand.wordpress.com/2018/08/10/gsoc-2018-final-report/
+slug: gsoc-2018-final-report
+title: GSoC 2018 Final Evaluation - VLC macOS interface redesign
+wordpress_id: 2163
+categories:
+- Life
+---
+
+Hi all,
+
+This blog post contains all relevant work I did in summer with VideoLAN on "macOS interface redesign" project.![largevlc](https://vibhoothiiaanand.files.wordpress.com/2018/08/largevlc.png)
+
+
+# 
+
+**Title of the project **
+
+
+
+
+### _VLC macOS Interface redesign _
+
+
+
+
+## **Synopsis
+
+**
+
+
+
+
+
+The project aims to revamp VLC's user interface for macOS and improve the user experience. It introduces the media center (aka. the libraryView), which provides users with a whole new way to browse and play video files on their computers. A new control system for video playback was also developed.
+
+My task as a GSoC Student was to implement a libraryView or mediaCenter view inside VLC with Service Discovery (loading videos into the mediaCenter) with help of CollectionView.
+
+<!-- more -->
+
+
+## **The Team**
+
+
+
+
+
+ 	
+  * Students
+
+ 	
+    * [Vibhoothi](https://code.videolan.org/vibhoothiiaanand) (Student, Amrita University)
+
+ 	
+    * [Daksh Shah](https://code.videolan.org/Daksh) (Student, IIIT-Delhi)
+
+
+
+
+ 	
+  * Mentors
+
+ 	
+    * [David Fuhrmann](https://code.videolan.org/dfuhrmann) ( Developer, VideoLAN)
+
+ 	
+    * [Felix Paul Kühne](https://code.videolan.org/fkuehne) ( Developer, VideoLAN)
+
+ 	
+    * [Jean-Baptiste Kempf](https://code.videolan.org/jbk)  ( President, VideoLAN)
+
+
+
+
+
+[caption id="" align="alignnone" width="541"]![Team Photo](http://daksh.github.io/images/team.jpg) From left: Vibhoothi(me), Daksh ,Jean-Baptiste ,Felix , David[/caption]
+
+The VideoLAN community as a whole was really helpful responding very positively to my queries on Freenode #vlc,#vlc-ports,#vlc-gsoc.
+
+
+## **What I did
+
+**
+
+
+After been accepted at VideoLAN as GSoC 208 student I first worked on an Icecast Patch,“[Add Icecast streaming to streaming gui](https://trac.videolan.org/vlc/ticket/17915)” that helped me learn more about the code base and the standards and more importantly coding conventions that are used which I was not familiar.
+
+During first evaluation part, I had my University Exam so I wasn't active first  1 and half weeks.After my exams on 29th of May, I have resumed work, as most of the time of day I was working,I think I worked more than 10 hours on most of the days as I was mostly idle and  had no other work to do, even though I took few hour breaks in between to watch some TV series,
+
+The patch was about introducing an Icecast streaming option into the Streaming GUI of Convert/Save, Following things was done as part of the patch which can be seen in "icecast#8" branch of [vlc/gsoc/macosx,](https://code.videolan.org/GSoC2018/macOS/vlc/tree/icecast%238)
+
+
+
+ 	
+  * [Introduce Icecast Streaming Service #1
+
+](https://code.videolan.org/GSoC2018/macOS/vlc/commit/2745a1759664bafe733f1d0bbd3c484a0e1a74b9) Introduced by adding new fields with proper auto layout constraints like mountPoint, username, secure password field, Initialised Icecast functioning part inside streamTypeToggle function with proper debug messages. I implemented these new fields with Auto Layout constraints so that they can resize dynamically
+
+
+
+ 	
+  * [Introduce Icecast Streaming Service #2
+
+](https://code.videolan.org/GSoC2018/macOS/vlc/commit/27c34b530534e91a1d647da1d9600c92fe3da923)In _modules/access_output/shout.c_, I added a NULL check for the mount point to _p_shout_, and debug logs.
+
+ 	
+  * [Introduce Icecast Streaming Service #3
+
+](https://code.videolan.org/GSoC2018/macOS/vlc/commit/a0982d6d9f712df397928d201fea04b2e8c1509d)Earlier Icecast patch had some issues when using arabic translations and Spanish where the text length overlapped the input fields which didn't go well so I had to redo most of the constraints.
+
+
+[gallery ids="2204,2205" type="rectangular"]
+
+During the first week of June, I flew to Frankfurt, Germany for a face-to-face meeting with the team to finalise the plans we wanted to do. After the meeting, I have started working on implementing the libraryView starting off first by removing the [sidebar](https://imgur.com/a/YlcxcQO),[splitView](https://imgur.com/a/1jN7Cbz) and podcasts from [_VLCMainWindow_](https://github.com/videolan/vlc/blob/master/modules/gui/macosx/VLCMainWindow.m) cocoa class. For refactoring the codebase I had to first understand the full working of the _VLCMainWindow _class, Fortunately, in the face-to-face meeting, the team clarified my uncertainty about what I needed to remove and keep.
+
+The following things were also done as part of first steps for making collectionView
+
+
+
+ 	
+  * [Remove podcast from VLCMainWindw.m](https://code.videolan.org/GSoC2018/macOS/vlc/commit/88b2a5a4c9f33c4bedf00d5b695a43300ad93a39)
+
+Removed the podcast section, which will no longer exist in version 4.0, from the sidebar. Things like _Podcast Views, Podcast Subscribe Window, Podcast unsubscribe window, Podcast controls, Podcast Buttons (addPodcast, removePodcast, addPodcastWindowAction) and functions to remove show/hide podcasts (showPodcastControls, hidePodcastControls)._
+
+
+
+ 	
+  * [Remove sidebar from VLCMainWindow.](https://code.videolan.org/GSoC2018/macOS/vlc/commit/5c1e88e03618feb9028dfa6f94899b8cbb33794d)
+
+The sidebar is removed as a whole in favour of collectionView which will be replaced and which will be the default view when player loads. For this, we removed the code related to the sidebar and functions_restoreSplitView,_ _reloadSidebar _functions and also sidebarHandling, which will be deprecated in VLC 4.0.
+
+
+
+ 	
+  * [Remove splitView from VLCMainWindow.m
+
+](https://code.videolan.org/GSoC2018/macOS/vlc/commit/5af5359a6a278dde4fcf1808eef62be077d53f25)Methods and variables related to splitView  like NSSplitViewDelagate,  _makeSplitViewVisible,makeSplitViewHidden etc..T_he most important and difficult part was scraping residues of splitView from changePlaylistState which was a bit complex
+
+ 	
+  * [Remove splitView from Interfacebuilder MainWindow.xib](https://code.videolan.org/GSoC2018/macOS/vlc/commit/c76cbf18ff1f1936ded2913b8a2a68d29e0e56a4)
+
+Here we have removed all labels, icons, columns, constraints and properties related to splitView and removed dropZone view Only and kept the codes.
+
+
+After refactoring the code Felix helped me to refactor the more complex parts. Also he added an empty basic collectionView ([adding a basic NSCollectionView)](https://code.videolan.org/GSoC2018/macOS/vlc/commit/1eb5cbd6456f5b7566d2b8bb51f3bd23e378166d) to adapt further, which helped me to make smoother progress.
+
+Then I started playing with the collectionView which was the end of the First Phase of the project.
+
+The second phase of the project was more like making a proper collectionView or libraryView advance using modern APIs
+
+
+
+ 	
+  * Loading the hardcoded images into VLC's libraryView using NSCollectionView
+
+[basic libraryView using Hardcoded images ](https://code.videolan.org/GSoC2018/macOS/vlc/commit/fe36eed7cb74e45426b048c734c67caa7182ca11)You can see below, when we open VLC it has the collection view instead of the regular sidebar and splitView. The first implementation was like having an NSArray with collectionView. The view for the collectionView was provided by NSCollectionViewItem cococa class with interface builder. After adding that inside the collectionView, the image is passed to the array using representObject and valueForKey
+
+
+
+    
+    <span style="font-weight:400;">[self.itemImageView setImage:[[NSBundle mainBundle] imageForResource:[representedObject valueForKey:@"itemImage"]]];</span>
+
+
+.
+
+[caption id="attachment_2167" align="alignnone" width="595"]![Screen Shot 2018-08-09 at 10.57.12 PM.png](https://vibhoothiiaanand.files.wordpress.com/2018/08/screen-shot-2018-08-09-at-10-57-12-pm.png?w=595) The current VLC 3.0 View[/caption]
+
+[caption id="attachment_2166" align="alignnone" width="609"]![Screen Shot 2018-06-22 at 2.52.56 AM.png](https://vibhoothiiaanand.files.wordpress.com/2018/08/screen-shot-2018-06-22-at-2-52-56-am.png) Very First Prototype of LibraryView using  hardcoded images[/caption]
+
+This method had so many issues. It was not mutable and hardcoding images were not possible for the real implementation. It was also not using modern APIs of collectionView which was introduced since macOS 10.11. 
+
+
+
+ 	
+  * Advance CollectionView using modern 10.11 NSCollectionView APIs
+
+So as part of making an advance collectionView, we raised the minimum OS requirement of VLC from macOS 10.10 to 10.11. This allowed for very flexible collection view with advanced properties like NSFlowLayout, collection view delegates. It also has very useful APIs like _"didSelectItemsAtIndexPaths","numberOfItemsInSection","itemForRepresentedObjectAtIndexPath", and "numberOfSectionsInCollectionView_", which will make the implementation of the libraryView simpler and cleaner.
+
+The main problems trying to delegate the following NSCollectionViewDelegate protocol as an object. Earlier I used mouseDown to track any selection states, but I later figured out that the cell should not handle this state but the NSCollectionView and its delegate instead. Earlier I had been using drawRect to colourize the NSView, but later did it AppKit where I just had to setup the background colour and rest will be done nicely by AppKit itself. Also, we made several changes to VLC Xcode Project to adapt the libraryView
+
+Few notable things in the advancement part are below,
+
+
+
+ 	
+  * [extras: Introduce new properties for VLC Xcode project](https://code.videolan.org/GSoC2018/macOS/vlc/commit/6b6879b54014301f13af87dd2e4134f3c316c5ce)
+
+This commit introduces various changes to the current VLC Xcode project which was essential for future development. Also, few are done as per Xcode Specification
+
+ 	
+  * [macosx:Introduce VLCMainWindowCollectionViewItem cocoa class with XIB](https://code.videolan.org/GSoC2018/macOS/vlc/commit/56bd830f4ddafbeb28c44f4bcbdac2e1d8cca239)
+
+This introduction is for making libraryView based on NSCollectionView by default for VLC 4.0
+
+The following files are newly introduced
+
+- VLCMainWindowCollectionViewItem.xib : An Interface for showing collectionView items.
+
+- VLCMainWindowCollectionViewItem.h : Header file for defining instance and instance variables
+
+- VLC MainWindowCollectionViewItem.m: Cococa class which contains the implementation of instance and representation of objects
+
+- Build VLCMainWindowCollectionViewItem files
+
+ 	
+  * [extras: Hello macOS 10.11](https://code.videolan.org/GSoC2018/macOS/vlc/commit/13ef62870200d690efb23a3eacc3686237147d7a)
+
+From VLC 4.0 we are making 10.11 macOS version as the minimum specification for having libraryView feature and for all who are below 10.11 will have normal VLC without libraryView feature.
+
+ 	
+  * [MainWindow: Introduce libraryView](https://code.videolan.org/GSoC2018/macOS/vlc/commit/5980e67d2b6bc9df4f2726dc9a97e8eeb2e38ac5)
+
+- Loads the image from default location which is hardcoded as of now using NSColelctionVIewDataSource and NSFileManager.
+
+- Uses FlowLayout for showing the items in the collectionView
+
+- Shows Highlight of selection with blue colour (alternateSelectedControlColor).
+
+- Get the index of selection using delegate following NSCollectionViewDelegate protocol and for debugging and all have displayed the log of it to command line.
+
+- Scrolling function is also there with this, when the user resizes Window, it dynamically resizes the collection view items
+
+
+[caption id="attachment_2169" align="alignnone" width="1363"]![Screen Shot 2018-07-07 at 12.47.42 AM.png](https://vibhoothiiaanand.files.wordpress.com/2018/08/screen-shot-2018-07-07-at-12-47-42-am.png) Sample Prototype 2 of libraryView using Advance macOS APIs[/caption]
+
+These things spanned up through the midterms.
+
+In the Third and final phase was the real implementation of the libraryView.
+
+
+
+ 	
+  * Load videos load into collectionView coupled with metadata in a nice way.
+
+The first problem in that I faced was the wrong view of libraryView due to Autolayout constraints, to fix up those I had to redo and recheck all constraints, as time was bit low so I kept fixing constraints to TO-DO list and continued working on implementing the popOver
+
+
+[caption id="attachment_2180" align="alignnone" width="359"]![screen-shot-2018-07-20-at-12-39-54-am.png](https://vibhoothiiaanand.files.wordpress.com/2018/08/screen-shot-2018-07-20-at-12-39-54-am-e1533878877628.png) libraryView W/O proper Constraints[/caption]
+
+[caption id="attachment_2181" align="alignnone" width="203"]![Screen Shot 2018-07-20 at 12.44.25 AM](https://vibhoothiiaanand.files.wordpress.com/2018/08/screen-shot-2018-07-20-at-12-44-25-am-e1533879082979.png) libraryViewItem with wrong constrainsts[/caption]
+
+So for Implementing the popOver which shows metadata I used NSPopOver linked to a button inside collectionViewItem
+
+[gallery ids="2182,2185" type="rectangular"]
+
+Due to uneven or wrong constraints, the view was super ugly and not at all organised. Also, I was not able to fix the issue at first because it was confusing for me. So again I kept this on my To-Do list.
+
+To display video inside the collectionView or libraryView, I made a fresh project where I implemented a video collection view using AVAsset and generated video thumbnails using AVAssetImageGenerator.In a separate standalone Xcode project where I have made a simple window(NSView) with NSCollectionView and NSCollectionViewItem coupled with image, string and a button. After trying a few times I was able to generate a sample with multiple NSMutableArray's to store values of the dummyData which was generated.
+
+Now the state of player was like I could load videos from a specified directory in which a popOver with dummyStrings in a nice way. The two things kept in TO-Do List (Fixing Constraints issue of the CollectionViewItem and making the popOver not working) was also fixed by this time
+
+[gallery ids="2188,2186,2187"]
+
+
+The most confusing and trouble was implementing the MVC(Model-View-Controller) to the current Implementation it took me a bit longer to make it fully working, had a series of discussions and different approaches to make it possible working so there will be a good separation of the model, view and the controller. When I tried to implement the MVC on the collectionView, I have faced multiple issues at different times. The final working approach for the dataModel was like Make a VLCLibraryItem class and define the data models,then use that the data model class to structure your data and your data source object (VLCMainWindow) will use it to provide data to the view after that change the values of this class object to subsequent calls. First I made three different arrays to store details like image, videoTitle, years, labels then work was like add dummy data to NSMutableArrays then pass those to dataModel after that call function "assignValueForDataModel:(VLCMainWindowDataModel *) dataModel" where dataModel is passed as an argument so inside this function values from the dataModel is assigned to the properties of view properly.
+
+The issue with this approach is that it is having more than one instance of dataModel (multiple Data Structures), by the concept of MVC I should have only one dataModel. The potential solution to this problem is making one dataModel object then assign the values which were generated from the prepareData function to objects of the dataModel class. Again another issue which I faced after doing this is that only last element was added or the same object of dataModel was added repeatedly to the array. After a quick discussion with David I found that If i should re allocate the array every time after adding to the array( self.dataModel = [[VLCMainWindowDataModel alloc] init ] ) this fixed the issue of adding dataModel to the array. Last issue regarding the MVC implementation was assigning the dataModel to relevant objects in the collectionView or libraryView, for this also I tried using loop but all gone into vain. Finally using objectAtIndexPath fixed the issue, all these tries was inide itemForRepresentation.
+
+
+
+
+    
+    VLCLibraryItem *model=[self.dummyData objectAtIndex:indexPath.item];
+
+
+
+
+The following are some notable and important changes as part of the final phase:
+
+
+
+
+
+
+ 	
+  * 
+
+
+[libraryView: Add a popOver inside collectionView](https://code.videolan.org/GSoC2018/macOS/vlc/commit/5298b5c7127873311c8698b3e969ee89b6241bfa)
+
+
+This commit introduces a minimal popOver with a button into the collectionView (aka. LibraryView), which shows all metaData information of the video when the user clicks the button.
+
+ 	
+  * [libraryView: MVC based libraryView with dummyData](https://code.videolan.org/GSoC2018/macOS/vlc/commit/4531bbefd9625040f038a496308af5e855617eb3)
+
+Fully revamp the current implementation of the libraryView with proper Guidelines of MVC so now there is a dataModel which is passed to VLCMainWindowCollectionViewItem with assignValueForDataModel with dataModel as an argument.
+
+ 	
+  * [libraryView: Use only a single instance of dataModel](https://code.videolan.org/GSoC2018/macOS/vlc/commit/29278198c52b4be1e60c8cc0bb9f9c3a3bcf20fc)
+
+Make and use only one instance of dataModel for showing items inside libraryView This also fixes the regression of [264754b3](https://code.videolan.org/GSoC2018/macOS/vlc/commit/264754b38f3a0771983c61fd7f65f37f2efb4966) . Also worth noting is that the loading performance increased marginally after this patch.
+
+ 	
+  * [LibraryView: Introduce Thumbnails with videoTitle using ImageGenerator](https://code.videolan.org/GSoC2018/macOS/vlc/commit/aa3299f619c75c9cee9cb5762c00860fabf6b60d)
+
+Introduce thumbnails to VLC's libraryView which is now loaded from a local directory. This commit also introduces videoTitle field below to video thumbnail in libraryView
+
+
+To wrap up the final phase work, I present the final prototype:
+
+[caption id="attachment_2216" align="alignnone" width="1440"]![Screen Shot 2018-08-09 at 10.41.20 PM.png](https://vibhoothiiaanand.files.wordpress.com/2018/08/screen-shot-2018-08-09-at-10-41-20-pm.png) Final Prototype of the libraryView[/caption]
+
+This wraps up my summer work. It was really great and I had an immense learning experience. I would like to express my sincere thanks to both David and Felix for constantly supporting and guiding me when I was stuck. Even when I brought up very basic doubts they were kind to explain them to me. Also, I would love to say special thanks to Jean Kempf(j-b), ePirat and all others from VideoLAN community who helped me. Last but not least, I would like to thank everyone who sent me their good wishes
+
+
+## **My Next Plans after GSoC**
+
+
+After the GSoC, I would really love to continue working on this project and maintain the libraryView and all the things which I did for the community. From the project proposal and from the face to face meeting we had some ideas like introducing a list mode which is found on iOS or formally known as the Play-Queue,Implementing a Audio Player coupled with collectionView, having a seperate section for Internet where users can play videos from YouTube,Vimeo etc and lastly and most important part which was outside scope of project, implementing the libraryView using libVLC core libraries and APIs instead of the dummyData with nice animations and blending option to make the libraryView ready to be shipped with VLC 4.0.
+
+Currently I have only contributed to small parts of the VLC media player, I am planning to contribute to multiple platforms and multiple platforms where VLC is available from end of 2018.
+
+
+## Repository  Links
+
+
+
+
+
+ 	
+  * LibraryView : [GSoC/2018/libraryView2](https://code.videolan.org/GSoC2018/macOS/vlc/commits/libraryView2)
+
+ 	
+  * Icecast :[GSoC/2018/icecast](https://code.videolan.org/GSoC2018/macOS/vlc/commits/icecast%238)
+
+ 	
+  * Relevant Commit History by each file : [commit_histroy](https://gist.github.com/vibhoothiiaanand/8acd0e5ae9bd9f1e07eb793fa0178834)
+
+ 	
+  * Project Proposal : [[VideoLAN]GSoC:macOS interface Redesign](https://drive.google.com/file/d/1OTwl4eAbeH_fZcfUkUvEQ5BPIgfDqij1/view?usp=sharing)
+
+
+
+
+## Skills Acquired
+
+
+
+
+
+ 	
+  * Objective C: I feel now I am comfortable doing stuff with objective C
+
+ 	
+  * Learned how to work with the large codebase
+
+ 	
+  * Also became familiar and understood many parts of the VLC source
+
+ 	
+  * Learned time management and meeting the deadlines and also GSoC helped to stop procrastination up to an extent
+
+ 	
+  * Became flexible using the Xcode environment.
+
+ 	
+  * Learned to how to debug applications crashes and much more
+
+
+Best Regards,
+
+Vibhoothi
