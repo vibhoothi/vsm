@@ -63,9 +63,17 @@ def calc_tfidf( func_tfidf, func_tokenzied, func_posting_lists):
                     func_tfidf[buffer1] = {}
                     func_tfidf[buffer1][token_buffer] = tf * idf
         buffer1 += 1
+
+def pretty_tfidf(func_tfidf):
+    print("Term frequency and Inverse document frequency: ")
+    print(json.dumps(func_tfidf, indent=2))
+
+
 def main():
     fetch_files()
     token_normalize( tokenzied, stemmer )
+    calc_tfidf(tfidf, toenzied, posting_lists )
+    pretty_tfidf(tfidf)
 
 if __name__== "__main__":
     main()
