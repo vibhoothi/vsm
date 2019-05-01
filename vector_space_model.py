@@ -48,6 +48,21 @@ def create_posting_list(func_tokenzied, posting_lists):
                 posting_lists[token_buffer][buffer1] = [buffer2]
             buffer2 += 1
         buffer1 += 1
+
+def calc_tfidf( func_tfidf, func_tokenzied, func_posting_lists):
+    buffer1 = 1
+    for file_buffer in tokenzied:
+        for token_buffer in file_buffer:
+            count = len( func_posting_lists[token_buffer][buffer1])
+            if count != 0:
+                tf = 1 + math.log10( count )
+                idf = math.log10( float( len(files))/len(func_posting_lists[token_buffer] ))
+                if buffer1 in func_tfidf:
+                    func_tfidf[buffer1][token_buffer] = tf * idf
+                else: 
+                    func_tfidf[buffer1] = {}
+                    func_tfidf[buffer1][token_buffer] = tf * idf
+        buffer1 += 1
 def main():
     fetch_files()
     token_normalize( tokenzied, stemmer )
