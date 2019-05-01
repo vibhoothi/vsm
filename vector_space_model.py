@@ -32,6 +32,22 @@ def token_normalize(func_tokenzied, func_stemmer):
                              for word in tokenized_buffer
                         ]
         tokenzied.append(normalized_buffer)
+
+def create_posting_list(func_tokenzied, posting_lists):
+    buffer1 = 1
+    for file_buffer in tokenzied:
+        buffer2 = 0 
+        for token_buffer in file_buffer:
+            if token_buffer in posting_lists :
+                if buffer1 in posting_lists[token_buffer]:
+                    posting_lists[token_buffer][buffer1].append(buffer2)
+                else:
+                    posting_lists[token_buffer][buffer1] = [buffer2]
+            else:
+                posting_lists[token_buffer] = {}
+                posting_lists[token_buffer][buffer1] = [buffer2]
+            buffer2 += 1
+        buffer1 += 1
 def main():
     fetch_files()
     token_normalize( tokenzied, stemmer )
