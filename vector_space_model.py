@@ -24,8 +24,17 @@ def fetch_files():
         if file.endswith(".txt"):
             files.append(directory + file)
 
+def token_normalize(func_tokenzied, func_stemmer):
+    for buffer in range(0,len(files)):
+        read_file = open(files[buffer], "r", encoding="utf-8", errors="ignore").read()
+        tokenized_buffer = nltk.word_tokenize(read_file)
+        normalized_buffer = [func_stemmer.stem(word.lower())  
+                             for word in tokenized_buffer
+                        ]
+        tokenzied.append(normalized_buffer)
 def main():
     fetch_files()
+    token_normalize( tokenzied, stemmer )
 
 if __name__== "__main__":
     main()
