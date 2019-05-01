@@ -64,6 +64,15 @@ def calc_tfidf( func_tfidf, func_tokenzied, func_posting_lists):
                     func_tfidf[buffer1][token_buffer] = tf * idf
         buffer1 += 1
 
+def find_cosine_similarity(func_weights):
+    buffer = 0
+    dictionary_keys = list( sorted(func_weights, key=func_weights.__getitem__, reverse=True))
+    while( buffer < len(dictionary_keys)):
+        cosine_similarity = str(weights[dictionary_keys[buffer]])
+        print("File "+ str(buffer+1)+ ": "+str(files[dictionary_keys[buffer]]))
+        print("Cosine Similarity: "+ cosine_similarity)
+        buffer += 1
+
 def pretty_tfidf(func_tfidf):
     print("Term frequency and Inverse document frequency: ")
     print(json.dumps(func_tfidf, indent=2))
@@ -73,6 +82,7 @@ def main():
     fetch_files()
     token_normalize( tokenzied, stemmer )
     calc_tfidf(tfidf, toenzied, posting_lists )
+    find_cosine_similarity(weights)
     pretty_tfidf(tfidf)
 
 if __name__== "__main__":
