@@ -70,6 +70,12 @@ def search(func_query, func_posting_lists):
     normalized_buffer = [stemmer.stem(word.lower())
                              for word in tokenized_query
                         ]
+    print("tokenized Query")
+    print(tokenized_query)
+    print("normalized_query")
+    print(normalized_query)
+    print("normalized_buffer")
+    print(normalized_buffer)
     for buffer in range(0, len(normalized_query)):
             if normalized_query[buffer] not in func_posting_lists:
                 buffer2 = difflib.get_close_matches(normalized_query[buffer], func_posting_lists)
@@ -110,16 +116,22 @@ def search(func_query, func_posting_lists):
 
     relevant_documents = len(relavant_buffer)
     retrieved_documents = min(len(weights), 20)
-    relevant_retrieved_documents = min(len(set(relavant_buffer.keys()) & set(weights.keys())), retrieved_documents )
-    precision = relevant_retrieved_documents / float(retrieved_documents)
-    recall = relevant_retrieved_documents / float(relevant_documents)
-    print( "Precision: "+ str(precision))
-    print( "Recall: " + str(recall))
+    print("Relevant Documents: "+ str(relevant_documents))
+    print("Retirved Documents: "+ str(retrieved_documents))
+    if(relevant_documents>0):
+        relevant_retrieved_documents = min(len(set(relavant_buffer.keys()) & set(weights.keys())), retrieved_documents )
+        precision = relevant_retrieved_documents / float(retrieved_documents)
+        recall = relevant_retrieved_documents / float(relevant_documents)
+        print( "Precision: "+ str(precision))
+        print( "Recall: " + str(recall))
+    else:
+        print("Error: Sorry No Relevant Documents found which Matches your query after normalizing")
 
 def find_cosine_similarity(func_weights):
     buffer = 0
     dictionary_keys = list( sorted(func_weights, key=func_weights.__getitem__, reverse=True))
     while( buffer < len(dictionary_keys)):
+        print("Cosine Similarity of Various Files")
         cosine_similarity = str(weights[dictionary_keys[buffer]])
         print("File "+ str(buffer+1)+ ": "+str(files[dictionary_keys[buffer]]))
         print("Cosine Similarity: "+ cosine_similarity)
@@ -131,14 +143,32 @@ def pretty_tfidf(func_tfidf):
 
 
 def main():
+    print("0/100")
+    print("Fetching files .....")
+    print("30/100")
     fetch_files()
+    print("Tokenzing and normalizing with stemmer....")
+    print("50/100")
     token_normalize( tokenzied, stemmer )
+    print("Creating the posting list....")
+    print("60/100")
     create_posting_list( tokenzied, posting_lists )
+    print("Calculating the TF and IDF....")
+    print("65/100")
     calc_tfidf(tfidf, tokenzied, posting_lists )
     query = input("Corpus: ")
+    print("Processing and calculating the vector space model...")
+    print("70/100")
     search(query, posting_lists)
-    find_cosine_similarity(weights)
-    pretty_tfidf(tfidf)
+    print("100/100")
+    new_input = int(input("Do you want to show Cosine Similarity ?(0/1) "))
+    if(new_input == 1):
+        find_cosine_similarity(weights)
+    new_input = int(input("Do you want to show tfidf ?(0/1) "))
+    if(new_input == 1):
+        pretty_tfidf(tfidf)
+    else:
+        exit(0)
 
 if __name__== "__main__":
     main()
