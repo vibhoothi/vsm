@@ -1,4 +1,4 @@
-import nltk 
+import nltk
 from nltk import *
 import difflib
 import math
@@ -28,7 +28,7 @@ def token_normalize(func_tokenzied, func_stemmer):
     for buffer in range(0,len(files)):
         read_file = open(files[buffer], "r", encoding="utf-8", errors="ignore").read()
         tokenized_buffer = nltk.word_tokenize(read_file)
-        normalized_buffer = [func_stemmer.stem(word.lower())  
+        normalized_buffer = [func_stemmer.stem(word.lower())
                              for word in tokenized_buffer
                         ]
         tokenzied.append(normalized_buffer)
@@ -36,7 +36,7 @@ def token_normalize(func_tokenzied, func_stemmer):
 def create_posting_list(func_tokenzied, posting_lists):
     buffer1 = 1
     for file_buffer in tokenzied:
-        buffer2 = 0 
+        buffer2 = 0
         for token_buffer in file_buffer:
             if token_buffer in posting_lists :
                 if buffer1 in posting_lists[token_buffer]:
@@ -59,7 +59,7 @@ def calc_tfidf( func_tfidf, func_tokenzied, func_posting_lists):
                 idf = math.log10( float( len(files))/len(func_posting_lists[token_buffer] ))
                 if buffer1 in func_tfidf:
                     func_tfidf[buffer1][token_buffer] = tf * idf
-                else: 
+                else:
                     func_tfidf[buffer1] = {}
                     func_tfidf[buffer1][token_buffer] = tf * idf
         buffer1 += 1
@@ -67,7 +67,7 @@ def calc_tfidf( func_tfidf, func_tokenzied, func_posting_lists):
 def search(func_query, func_posting_lists):
     tokenized_query = nltk.word_tokenize(func_query)
     normalized_query = [ stemmer.stem(word.lower()) for word in tokenized_query]
-    normalized_buffer = [stemmer.stem(word.lower())  
+    normalized_buffer = [stemmer.stem(word.lower())
                              for word in tokenized_query
                         ]
     for buffer in range(0, len(normalized_query)):
@@ -77,13 +77,13 @@ def search(func_query, func_posting_lists):
                     special_corpus_query.append(buffer2[0])
             else:
                     special_corpus_query.append(normalized_query[buffer])
-            
+
     query_tfidf= {}
     for buffer3 in special_corpus_query:
         if buffer3 in func_posting_lists:
             idf = math.log10( float( len(files))/len(set(func_posting_lists[buffer3] )))
             query_tfidf[buffer3] = (1 + math.log10(special_corpus_query.count(buffer3)))*idf
-    
+
     weights_buffer = {}
     relavant_buffer = {}
     weight_buffer = 0
@@ -107,7 +107,7 @@ def search(func_query, func_posting_lists):
         weight_buffer = weight_buffer/((squareroot_sum_query**(1/2))*(squareroot_sum_doc**(1/2)))
         if weight_buffer != 0:
             weights[buffer] = weight_buffer
-        
+
     relevant_documents = len(relavant_buffer)
     retrieved_documents = min(len(weights), 20)
     relevant_retrieved_documents = min(len(set(relavant_buffer.keys()) & set(weights.keys())), retrieved_documents )
@@ -134,7 +134,7 @@ def main():
     fetch_files()
     token_normalize( tokenzied, stemmer )
     create_posting_list( tokenzied, posting_lists )
-    calc_tfidf(tfidf, toenzied, posting_lists )
+    calc_tfidf(tfidf, tokenzied, posting_lists )
     query = input("Corpus: ")
     search(query, posting_lists)
     find_cosine_similarity(weights)
